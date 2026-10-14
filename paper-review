@@ -1,0 +1,90 @@
+#!/bin/bash
+set -u
+[ $# -eq 1 ] && [ -f "$1" ] || { echo "usage: paper-review <paper.pdf>" >&2; exit 1; }
+
+gemini_model=gemini-3.8-flash-high
+claude_model=claude-opus-5-5
+gpt_model=gpt-6-astra
+
+codex=$(command -v codex || ls -d "$HOME"/.vscode/extensions/openai.chatgpt-*/bin/*/codex 2>/dev/null | sort -V | tail -1)
+chrome=$(command -v google-chrome chromium chromium-browser 2>/dev/null | head -1)
+mac_chrome="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+[ -z "$chrome" ] && [ -x "$mac_chrome" ] && chrome=$mac_chrome
+for c in pdftotext pdftoppm pandoc; do
+  command -v "$c" > /dev/null || { echo "paper-review needs $c (install poppler and pandoc)" >&2; exit 1; }
+done
+[ -n "$codex" ] || { echo "paper-review needs the Codex CLI: npm install -g @openai/codex" >&2; exit 1; }
+[ -n "$chrome" ] || { echo "paper-review needs Google Chrome or Chromium to write the PDF" >&2; exit 1; }
+
+pdf="$(cd "$(dirname "$1")" && pwd)/$(basename "$1")"
+name=$(basename "$pdf" .pdf)
+dest="${pdf%.*}_review.pdf"
+home=$(dirname "$(readlink -f "$0")")
+run="$home/runs/$(date +%Y%m%d-%H%M%S)"
+
+log() { echo "[$(date +%H:%M:%S)] $*" >&2; }
+
+keep() {
+  if [ -s "$1.raw" ]; then
+    { echo "# Review by $2"; echo; cat "$1.raw"; } > "$1.md"
+    log "$2 finished"
+  else
+    log "$2 failed, see $run/$1.log"
+  fi
+}
+
+gpt() {
+  out=$1 prompt=$2
+  shift 2
+  for effort in ultra max; do
+    "$codex" exec -m "$gpt_model" -c "model_reasoning_effort=\"$effort\"" -s read-only --skip-git-repo-check \
+      "$@" -o "$out" < "$prompt" >> "${out%.*}.log" 2>&1 && [ -s "$out" ] && return 0
+  done
+  return 1
+}
+
+mkdir -p "$run/pages" && cd "$run" || exit 1
+cp "$pdf" paper.pdf
+pdftotext -layout paper.pdf paper.txt 2>/dev/null
+pdftoppm -png -r 110 paper.pdf pages/page 2>/dev/null
+cp "$home/review_prompt.md" "$home/aggregate_prompt.md" .
+imgs=()
+for p in pages/*.png; do imgs+=(-i "$p"); done
+log "Working in $run"
+
+(
+  agy -p "$(cat review_prompt.md)" --model "$gemini_model" > gemini.raw 2> gemini.log
+  keep gemini "$gemini_model via Antigravity"
+) &
+
+(
+  claude -p "$(cat review_prompt.md)" --model "$claude_model" --effort max --disallowedTools Write Edit NotebookEdit > claude.raw 2> claude.log
+  keep claude "$claude_model at max effort via Claude Code"
+) &
+
+(
+  for i in $(seq 360); do
+    "$codex" login status 2>&1 | grep -q 'Not logged in' || break
+    [ "$i" = 1 ] && log "Codex is not logged in, waiting up to an hour. Run: \"$codex\" login"
+    sleep 10
+  done
+  gpt gpt.raw review_prompt.md "${imgs[@]}"
+  keep gpt "$gpt_model at $effort effort via Codex"
+) &
+
+wait
+log "Combining the reviews with $gpt_model"
+gpt report.md aggregate_prompt.md "${imgs[@]}" || { log "Combining failed, see $run/report.log"; exit 1; }
+
+{
+  cat report.md
+  for r in claude gpt gemini; do
+    [ -f "$r.md" ] && { printf '\n\n<div style="page-break-before: always"></div>\n\n'; cat "$r.md"; }
+  done
+} > combined.md
+pandoc combined.md -s --mathml -o review.html --metadata pagetitle="Review of $name" \
+  -V header-includes='<style>@page{size:A4;margin:16mm} body{max-width:none;padding:0}</style>'
+profile=$(mktemp -d)
+"$chrome" --headless --no-pdf-header-footer --user-data-dir="$profile" --print-to-pdf="$dest" "file://$run/review.html" > /dev/null 2>&1
+rm -rf "$profile"
+[ -s "$dest" ] && log "Wrote $dest" || { log "PDF step failed, the report is at $run/report.md"; exit 1; }
