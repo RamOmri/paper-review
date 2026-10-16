@@ -20,3 +20,5 @@ Read the whole paper before you write anything. That includes figures, tables, c
 9. The three changes that would most improve the paper.
 
 Be specific and demanding, as a strict but fair reviewer would be. Tie every point to a location in the paper. Do not invent content that is not in the paper. Do not pad the review with generic advice.
+
+Write in plain, professional language that the author can understand on the first reading. Use ordinary words and complete sentences. Use a technical term only when the paper uses it or the field has no plainer word, and define it the first time. Avoid jargon unless no plainer word exists. Never invent terms or labels of your own. Never use metaphors: describe everything literally. Do not coin labels for problems, and do not compress a point into a heading or a list of nouns. Say what the paper does, what is wrong with it, and what to change. Do not use em dashes or en dashes.

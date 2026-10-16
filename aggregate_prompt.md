@@ -18,8 +18,8 @@ Start the report with a level one heading that names the paper. Then write these
 3. Points two reviewers raised.
 4. Points one reviewer raised.
 5. Where the reviewers disagree, and which side the paper supports.
-6. What to change, as a numbered list with the most important change first. Tie each item to the points above.
+6. What to change, as a numbered list with the most important change first. Write each item as plain sentences that tell the author exactly what to add, remove or rewrite in the paper. Do not open items with bold headings, and do not use reviewer shorthand. Tie each item to the points above.
 
-Within sections 2 to 4, put the most serious points first. Write clear, natural prose that the author can understand on the first reading. Explain each problem in plain terms before giving numbers or line references. Define the paper's terms the first time you use them. Give line, table or figure references where they help the author find the problem. Do not use em dashes or en dashes.
+Within sections 2 to 4, put the most serious points first. Write the whole report in plain, professional language. Use ordinary words, and replace any jargon the reviewers used with a plain description of what they meant. Avoid jargon unless no plainer word exists, and never invent terms or labels of your own. Never use metaphors: describe everything literally, and rewrite any metaphor a reviewer used as the literal claim behind it. Write clear, natural prose that the author can understand on the first reading. Explain each problem in plain terms before giving numbers or line references. Define the paper's terms the first time you use them. Give line, table or figure references where they help the author find the problem. Do not use em dashes or en dashes.
 
 Do not create or edit any files. Your final message must be the complete report in Markdown.
