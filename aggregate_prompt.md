@@ -18,7 +18,7 @@ Start the report with a level one heading that names the paper. Then write these
 3. Points two reviewers raised.
 4. Points one reviewer raised.
 5. Where the reviewers disagree, and which side the paper supports.
-6. What to change, as a numbered list with the most important change first. Write each item as plain sentences that tell the author exactly what to add, remove or rewrite in the paper. Do not open items with bold headings, and do not use reviewer shorthand. Tie each item to the points above.
+6. What to change, as a numbered list with the most important change first. The author should be able to fix the paper from this section alone, without reading the rest of the report. In each item, say briefly and plainly what to add, remove or rewrite, and where in the paper. Do not refer to other sections or points of this report. Do not open items with bold headings, and do not use reviewer shorthand. End the section with one table of every confirmed language error, in the order the errors appear in the paper. Its columns are the section, the exact text and the correction.
 
 Within sections 2 to 4, put the most serious points first. Write the whole report in plain, professional language. Use ordinary words, and replace any jargon the reviewers used with a plain description of what they meant. Avoid jargon unless no plainer word exists, and never invent terms or labels of your own. Never use metaphors: describe everything literally, and rewrite any metaphor a reviewer used as the literal claim behind it. Write clear, natural prose that the author can understand on the first reading. Explain each problem in plain terms before giving numbers or locations. Define the paper's terms the first time you use them. Do not use em dashes or en dashes.
 
